@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+	">
+	
+ 	<!-- 同时也开启了json格式的支持,
+ 		  当controller中返回的是bean或者是其他java对象的时候，自动将其转化为json对象
+ 		 需要在controller方法上加上@ResponseBody
+	-->
+ 	<mvc:annotation-driven></mvc:annotation-driven>
+
+	
+	<!-- 扫描所有的controller 但是不扫描service 避免扫描框架自带的包 -->
+	<context:component-scan base-package="com.cug.lab">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Service" />
+	</context:component-scan>
+	
+	
+	<!-- 
+		配置拦截器 bean中的class属性就是拦截器实现 ；
+		实现Spring的HandlerInterceptor接口 或者 继承Spring的WebRequestInterceptor
+		可有多个拦截器，其会有三个方法：
+							preHandle-拦截请求之后，执行controller中方法之前：
+								返回false表示拦截，并要用request转发到之前的页面
+							postHandle-执行完成controller方法之后，页面渲染之前：
+								可以修改返回modelandview等操作
+							afterCompletion-页面完成之后：
+								释放资源
+		多个拦截器的书顺序，按照下面声明的顺序执行
+			先执行完所有的preHandle，再反向执行完所有的postHandle，最后再反向执行完所有的afterCompletion
+	 -->
+	 <mvc:interceptors>
+		<mvc:interceptor>
+			<!-- 进行拦截：/**表示拦截所有controller -->
+	        <mvc:mapping path="/**" />
+	    	<!-- 不进行拦截 :以下是静态资源     -->
+	        <mvc:exclude-mapping path="/static/**"/>
+			<bean class="com.cug.lab.interceptor.LoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors> 
+	
+	<!--定义视图解析器-->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+	
+	<!-- 因为在springmvc的配置文件中，将拦截规则由*.action 改为了/ 所以，静态资源也会被拦截，需要在这里配置 对静态资源放行 -->
+	<mvc:resources mapping="/static/**" location="/WEB-INF/static/"/>
+	
+</beans>

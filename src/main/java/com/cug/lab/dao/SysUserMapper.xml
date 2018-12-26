@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cug.lab.dao.SysUserMapper" >
+  <resultMap id="SysUserResultMap" type="com.cug.lab.model.SysUser" >
+    <id column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_psd" property="userPsd" jdbcType="VARCHAR" />
+    <result column="user_code" property="userCode" jdbcType="INTEGER" />
+    <result column="user_role" property="userRole" jdbcType="INTEGER" />
+    <result column="user_company" property="userCompany" jdbcType="VARCHAR" />
+    <result column="user_address" property="userAddress" jdbcType="INTEGER" />
+    <result column="user_create_time" property="userCreateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <select id="selectOneUserByNameAndPsd" resultMap="SysUserResultMap" parameterType="com.cug.lab.model.SysUser" >
+    select *
+    from sys_user
+    where user_name = #{userName,jdbcType=VARCHAR} and
+    		user_psd = #{userPsd,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAllUser" resultMap="SysUserResultMap" parameterType="com.cug.lab.beans.Page">
+    select *
+    from sys_user 
+    <![CDATA[ where user_role < 3 
+    limit #{courent},#{rows} ]]> 
+  </select>
+  <select id="selectAllUserCount" resultType="Integer">
+    select count(*)
+    from sys_user 
+     <![CDATA[ where user_role < 3 ]]> 
+  </select>
+  
+  <select id="selectAllUserByName" resultMap="SysUserResultMap" parameterType="map">
+    select *
+    from sys_user 
+   	<![CDATA[ where user_name = #{name} and user_role < 3
+    limit #{courent},#{rows}]]> 
+  </select>   
+  <select id="selectAllUserCountByName" parameterType="java.lang.String" resultType="Integer">
+    select count(*)
+    from sys_user
+    <![CDATA[ where user_name = #{name} and user_role < 3]]>
+  </select>
+  
+  
+  <select id="selectAllUserByCode" resultMap="SysUserResultMap" parameterType="map">
+    select *
+    from sys_user 
+     <![CDATA[ where user_code = #{code} and user_role < 3
+    limit #{courent},#{rows}]]>
+  </select>   
+  <select id="selectAllUserCountByCode" parameterType="java.lang.Integer" resultType="Integer">
+    select count(*)
+    from sys_user
+    <![CDATA[  where user_code = #{code} and user_role < 3]]>
+  </select>
+  
+  
+  
+   <select id="selectAllUserByRole" resultMap="SysUserResultMap" parameterType="map">
+    select *
+    from sys_user 
+    <![CDATA[  where user_role = #{role} and user_role < 3
+    limit #{courent},#{rows}]]>
+  </select>   
+  <select id="selectAllUserCountByRole" parameterType="java.lang.Integer" resultType="Integer">
+    select count(*)
+    from sys_user
+     <![CDATA[ where user_role = #{role} and user_role < 3]]>
+  </select>
+  
+  
+   <select id="selectAllUserByAdress" resultMap="SysUserResultMap" parameterType="map">
+    select *
+    from sys_user 
+     <![CDATA[ where user_address = #{address} and user_role < 3
+    limit #{courent},#{rows}]]>
+  </select>   
+  <select id="selectAllUserCountByAdress" parameterType="java.lang.Integer" resultType="Integer">
+    select count(*)
+    from sys_user
+     <![CDATA[ where user_address = #{address} and user_role < 3]]>
+  </select>
+  
+  <select id="checkName" resultMap="SysUserResultMap" parameterType="com.cug.lab.model.SysUser">
+    select *
+    from sys_user
+    where user_name = #{userName,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertUser"   parameterType="com.cug.lab.model.SysUser" >
+    insert into sys_user 
+    (user_name, user_psd, user_code, user_role, user_company, user_address,user_create_time)
+    
+     values 
+     (#{userName,jdbcType=VARCHAR}, #{userPsd,jdbcType=VARCHAR}, 
+      #{userCode,jdbcType=INTEGER}, #{userRole,jdbcType=INTEGER}, 
+      #{userCompany,jdbcType=VARCHAR},#{userAddress,jdbcType=INTEGER},
+      #{userCreateTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <update id="updateUser"   parameterType="com.cug.lab.model.SysUser" >
+     UPDATE sys_user 
+      SET 
+      	user_company =#{userCompany,jdbcType=VARCHAR} , 
+      	user_address = #{userAddress,jdbcType=INTEGER}
+      WHERE 
+      	user_id = #{userId}
+  </update>
+  <update id="updatePsd"   parameterType="com.cug.lab.model.SysUser" >
+     UPDATE sys_user 
+      SET 
+      	user_psd =#{userPsd,jdbcType=VARCHAR} 
+      WHERE 
+      	user_id = #{userId}
+  </update>
+  <delete id="deleteOneUser" parameterType="com.cug.lab.model.SysUser">
+  	delete FROM sys_user
+  	where 
+  		user_id = #{userId}
+  </delete>
+  
+  <delete id="deleteListUser" parameterType="java.util.List" >
+		DELETE FROM sys_user
+          where user_id in 
+          <foreach collection="list" index="index" item="id" open="(" separator="," close=")">  
+            #{id}  
+        </foreach>
+	</delete>
+  
+  
+  
+</mapper>
