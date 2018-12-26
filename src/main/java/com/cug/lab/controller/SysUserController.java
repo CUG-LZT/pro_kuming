@@ -89,6 +89,7 @@ public class SysUserController {
 	@ResponseBody
 	@RequestMapping(value = "/insertUser.json")
 	public MsgToPage<SysUser> insertUser(SysUser user) {
+		System.out.println(user);
 		MsgToPage<SysUser> msgToPage = new MsgToPage<SysUser>();
 		if(checkName(user)) {
 			//id cede CreateTime 由后台生成
